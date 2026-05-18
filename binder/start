@@ -1,0 +1,4 @@
+#!/bin/bash
+# Limit numpy to single-threaded operations; much much better performance for picoGPT on Binder
+export OPENBLAS_NUM_THREADS=1
+exec "$@"
