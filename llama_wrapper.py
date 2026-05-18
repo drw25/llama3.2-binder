@@ -31,7 +31,7 @@ class LlamaWrapper:
         else:
             raise Exception("Private attribute does not exist.")
     def get_tensors(self):
-        return GGUFReader(self.model_file,"r").tensors
+        return GGUFReader(self.model_path,"r").tensors
     def get_tensor(self,tensor_name):
         tensor = [t for t in self.get_tensors() if t.name==tensor_name][0]
         return (np.array(tensor.data,copy=True),tensor.tensor_type)
