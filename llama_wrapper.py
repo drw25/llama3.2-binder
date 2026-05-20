@@ -2,7 +2,7 @@ from llama_cpp import Llama
 from gguf.gguf_reader import GGUFReader
 import numpy as np
 
-LLM_ARGS = {"n_threads":1,"n_threads_batch":1,"logits_all":True,"verbose":False}
+LLM_ARGS = {"n_threads":1,"n_threads_batch":1,"logits_all":True,"verbose":False,"flash_attn":True}
 
 class LlamaWrapperEmptyLLM:
     def __getattr__(self,name):
@@ -10,17 +10,18 @@ class LlamaWrapperEmptyLLM:
         return None
 
 class LlamaWrapper:
-    def __init__(self,model_path,tokenizer_only=False):
+    def __init__(self,model_path,tokenizer_only=False,**kwargs):
         self.model_path = model_path
         self._llm = LlamaWrapperEmptyLLM()
+        self._kwargs = kwargs
         self.tokenizer_only = tokenizer_only
     def __repr__(self):
         return f"LLMWrapper(model_path={self.model_path},tokenizer_only={self.tokenizer_only})"
     def __enter__(self):
         if self.tokenizer_only:
-            self._llm = Llama(model_path=self.model_path,vocab_only=False,**LLM_ARGS)
+            self._llm = Llama(model_path=self.model_path,vocab_only=False,**LLM_ARGS,**self._kwargs)
         else:
-            self._llm = Llama(model_path=self.model_path,**LLM_ARGS)
+            self._llm = Llama(model_path=self.model_path,**LLM_ARGS,**self._kwargs)
         return self
     def __exit__(self,type,value,traceback):
         del(self._llm)
